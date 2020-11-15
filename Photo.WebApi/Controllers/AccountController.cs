@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Photo.WebApi.Entities;
 using Photo.WebApi.Helpers;
+using Photo.WebApi.Interfaces;
 using Photo.WebApi.Services;
 using static Photo.WebApi.Models.UserViewModel;
 
@@ -24,14 +25,17 @@ namespace Photo.WebApi.Controllers
         private readonly UserManager<DbUser> _userManager;
         private readonly SignInManager<DbUser> _signInManager;
         private readonly IJwtTokenService _IJwtTokenService;
+        private readonly IRecaptchaService _recaptchaService;
         private readonly IWebHostEnvironment _env;
 
         public AccountController(EFContext context,
            UserManager<DbUser> userManager,
            SignInManager<DbUser> signInManager,
            IJwtTokenService IJwtTokenService,
+           IRecaptchaService recaptchaService,
            IWebHostEnvironment env)
         {
+            _recaptchaService = recaptchaService;
             _userManager = userManager;
             _context = context;
             _signInManager = signInManager;
@@ -43,13 +47,17 @@ namespace Photo.WebApi.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest("Bad Model");
+                return BadRequest("Спробуйте знову");
+            }
+            if (!_recaptchaService.IsValid(model.RecaptchaToken))
+            {
+                return BadRequest("Я вас упізнав. Ви - бот!!!");
             }
 
             var user = _context.Users.FirstOrDefault(u => u.Email == model.Email);
             if (user == null)
             {
-                return BadRequest("Даний користувач не знайденний!");
+                return BadRequest("Даний користувач не знайдений!");
             }
 
             var result = _signInManager

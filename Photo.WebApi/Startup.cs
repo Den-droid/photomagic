@@ -19,6 +19,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Photo.WebApi.Interfaces;
 
 namespace Photo.WebApi
 {
@@ -93,6 +94,7 @@ namespace Photo.WebApi
                 .AddDefaultTokenProviders();
 
             services.AddTransient<IJwtTokenService, JwtTokenService>();
+            services.AddTransient<IRecaptchaService, RecaptchaService>();
 
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetValue<string>("SecretPhrase")));
 
