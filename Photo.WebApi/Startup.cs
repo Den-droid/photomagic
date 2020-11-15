@@ -94,7 +94,6 @@ namespace Photo.WebApi
 
             services.AddTransient<IJwtTokenService, JwtTokenService>();
 
-            //var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Kesha-kapitan-krasavchik"));
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetValue<string>("SecretPhrase")));
 
             services.AddAuthentication(options =>
